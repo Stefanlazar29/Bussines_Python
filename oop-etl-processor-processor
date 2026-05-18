@@ -1,0 +1,59 @@
+# 1. ENTITY (Stochează doar datele simple)
+class Product:
+    def __init__(self, name, price, quantity):
+        self.name = name
+        self.price = price
+        self.quantity = quantity
+
+    def __str__(self):
+        # Această metodă magică ne va ajuta să printăm frumos în consolă
+        return f"Produs: {self.name} | Pret Redus: {self.price} RON | Stoc: {self.quantity}"
+
+
+# 2. PARSER (Robotul care rupe string-ul și filtrează/calculează)
+class ParserProduct:
+    @staticmethod
+    def parse(text_brut):
+        parts = text_brut.split(":")
+        name = parts[0]
+        price = float(parts[1])
+        quantity = int(parts[2])
+
+        # Cerința: doar dacă e pe stoc (quantity == 1)
+        if quantity == 1:
+            # Cerința: aplicăm reducerea de 10%
+            discounted_price = price * 0.9
+            # Returnăm obiectul Product gata construit cu datele noi
+            return Product(name, discounted_price, quantity)
+        
+        return None
+
+
+# 3. MANAGER (Orchestratorul care adună produsele bune într-o listă)
+class ShopManager:
+    def __init__(self):
+        self.valid_products = []
+
+    def processing_list(self, products_list):
+        for item in products_list:
+            # Chemăm clasa de analiză și metoda ei statică
+            product = ParserProduct.parse(item)
+            if product:
+                self.valid_products.append(product)
+        
+        return self.valid_products
+
+
+# --- EXECUTIE (Aici se întâmplă magia în consolă) ---
+if __name__ == "__main__":
+    raw_data = ["laptop:1200:1", "mouse:20:0", "monitor:300:1", "tastatura:50:1"]
+    
+    # Instanțiem managerul
+    manager = ShopManager()
+    
+    # Trimitem lista brută prin conductă (Pipeline-ul ETL)
+    final_products = manager.processing_list(raw_data)
+    
+    print("\n--- RAPORT PRODUSE FILTRATE ȘI REDUSE ---")
+    for prod in final_products:
+        print(prod)

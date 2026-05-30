@@ -1,4 +1,4 @@
-# Learning-Python-
+# Bussines-Python-Objects
 Represent my journey in learning Python and current level that I`m progress. 
 
 My focus isn`t for writting code, is to observe why I`m actually using this code. 

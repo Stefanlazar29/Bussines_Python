@@ -1,0 +1,30 @@
+import pandas as pd
+from apscheduler.triggers import date
+import logging
+
+
+def curata_date(df):
+    #Elimina randurile fara ID service
+    df = df.dropna(subset=['service_id'])
+    #Asigurate ca pretul este numeric
+    df['cost'] = pd.to_numeric(df['cost'], errors='coerce').fillna(0)
+    return df
+
+def adauga_taxe(df)
+    #Calculam TVA-ul
+    df['tva'] = df['cost'] * 0.19
+    df['total_cu_tva'] = df['cost'] + df['tva']
+    return df
+
+def ruleaza_pipeline(df):
+    #Simulam incarcare
+    data = {'service_id':[1,2,None,4], 'cost':[100,200, 50, '300']}
+
+    #Modularizare apelurilor
+    df = curata_date(df)
+    df = adauga_taxe(df)
+    
+    print(df)
+
+if __name__ == '__main__':
+    ruleaza_pipeline()

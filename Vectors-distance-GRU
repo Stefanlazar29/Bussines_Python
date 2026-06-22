@@ -1,0 +1,19 @@
+import numpy as np
+
+
+#Vectorul pozitiei roverului in plan 2D
+x = np.array([1,0])
+
+#Matricea de rotatie cu 90 de grade (A)
+# Cos(90)=0, Sin(90)=0
+theta = np.radians(90)
+A = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta), np.cos(theta)]])
+
+# Aplicam transformarea (rotatia)
+x_nou = A @ x
+print(f"Pozitia initiala: {x}")
+print(f"Pozitia dupa rotatie: {x_nou}")
+
+
+

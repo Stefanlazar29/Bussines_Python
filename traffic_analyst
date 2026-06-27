@@ -1,0 +1,54 @@
+import cv2
+import numpy as np
+from ultralytics import YOLO
+import time
+import json
+
+# 1. Incarca modelul
+model = YOLO('yolov8n.pt')
+
+# 2. Sursa locala
+video_source = r"C:\Users\Asus\Downloads\WhatsApp Video 2026-06-27 at 01.37.28.mp4"
+cap = cv2.VideoCapture(video_source)
+
+prev_frame_time = 0
+prev_position = {}
+
+print("Se initiaza analiza video local ...")
+
+while cap.isOpened():
+    succes, frame = cap.read()
+    if not succes:
+        print("Analiza s-a terminat.")
+        break
+
+    current_time = time.time()
+
+    # Detectie si tracking
+    results = model.track(frame, persist=True, classes=[2, 3, 5, 7], verbose=False)
+
+    if results[0].boxes.id is not None:
+        boxes = results[0].boxes.xyxy.cpu().numpy()
+        clss = results[0].boxes.cls.cpu().numpy()
+        ids = results[0].boxes.id.cpu().numpy().astype(int)
+
+        for box, cls, id_num in zip(boxes, clss, ids):
+            x1, y1, x2, y2 = box.astype(int)
+
+            # Desenare
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            label = f"ID:{id_num} {model.names[int(cls)].upper()}"
+            cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+    # Afisare FPS
+    fps = 1 / (current_time - prev_frame_time + 1e-6)
+    prev_frame_time = current_time
+    cv2.putText(frame, f"FPS: {fps:.1f}", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+    cv2.imshow("Analiza Trafic", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
